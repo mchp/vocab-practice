@@ -27,5 +27,6 @@ func Lookup(input string) ([]TranslatedWord, error) {
 	if err != nil {
 		return nil, err
 	}
+	//TODO: mark all the translations that already exist in storage
 	return parseToWords(resp.Body)
 }

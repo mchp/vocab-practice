@@ -46,8 +46,17 @@ func main() {
 		return c.String(http.StatusOK, fmt.Sprintf("%v", translations))
 	})
 
-	e.GET("/submit", func(c echo.Context) error {
-		return nil
+	e.POST("/input", func(c echo.Context) error {
+		v := c.FormValue("vocab")
+		t := c.FormValue("translation")
+		if v == "" || t == "" {
+			return c.String(http.StatusBadRequest, fmt.Sprintf("no necessary parameters in request vocab=%s, translation=%s", v, t))
+		}
+		err := db.Input(v, t)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+		return c.String(http.StatusOK, fmt.Sprintf("vocab=%s, translation=%s", v, t))
 	})
 
 	e.POST("/pass", func(c echo.Context) error {

@@ -51,6 +51,7 @@ func allowableClass(c string) bool {
 	return false
 }
 
+// This method only works if we assume Google Translate always return well formed responses
 func parse(in io.Reader, parent *token) error {
 	var builder strings.Builder
 	currentChild := &token{}
