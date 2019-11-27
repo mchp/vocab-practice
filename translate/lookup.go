@@ -16,6 +16,10 @@ type TranslatedWord struct {
 	translation string
 }
 
+func (t *TranslatedWord) String() string {
+	return fmt.Sprintf("(%s) %s", t.class, t.translation)
+}
+
 // Lookup fetches translation results from Google Translate
 func Lookup(input string) ([]TranslatedWord, error) {
 	url := fmt.Sprintf(urlFormat, spanish, english, url.PathEscape(input))
