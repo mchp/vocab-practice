@@ -1,0 +1,28 @@
+https://translate.googleapis.com/translate_a/single?client=gtx&sl=es&tl=en&dt=bd&q=mu%C3%B1eca
+
+[
+    null,
+    [
+        [
+            "noun",
+            ["wrist","doll","dummy"],
+            [
+                ["wrist",["muñeca"],null,0.40403652],
+                ["doll",["muñeca","muñeco","gachí","jai"],null,0.34023288],
+                ["dummy",["maniquí","muñeco","muerto","chupete","tonto","muñeca"],null,1.795602E-4]
+            ],
+            "muñeca",
+            1
+        ],
+        [
+            "adjective",
+            ["dollish"],
+            [
+                ["dollish",["muñeca"],null,1.6187843E-5]
+            ],
+            "muñeca",
+            3
+        ]
+    ],
+    "es"
+]

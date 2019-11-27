@@ -15,6 +15,7 @@ type Word struct {
   Outputs []*outputAndTest
 }
 
+
 func (w *Word) String() string {
   str := w.Input + ": ";
   for _, o := range w.Outputs {
@@ -32,6 +33,7 @@ type DB struct {
   db *sql.DB
 }
 
+
 func Init() (*DB, error) {
   db, err := sql.Open("mysql", "root:rainstop@tcp(:3306)/vocabpractice?parseTime=true")
   if err != nil {
@@ -42,6 +44,7 @@ func Init() (*DB, error) {
   }
   return &DB{db}, nil
 }
+
 
 func (d *DB) FetchNext() (*Word, error) {
   row := d.db.QueryRow("SELECT vocab FROM vocabs ORDER BY last_test DESC LIMIT 1")
@@ -67,6 +70,7 @@ func (d *DB) FetchNext() (*Word, error) {
   return w, nil
 }
 
+
 func (d *DB) checkExist(vocab, translation string) (bool, error) {
   rows, err := d.db.Query("SELECT * FROM vocabs WHERE vocab=? AND translation=?", vocab, translation)
   if err != nil {
@@ -78,6 +82,7 @@ func (d *DB) checkExist(vocab, translation string) (bool, error) {
   }
   return false, nil
 }
+
 
 func (d *DB) Pass(vocab, translation string) error {
   exist, err := d.checkExist(vocab, translation)
@@ -93,6 +98,8 @@ func (d *DB) Pass(vocab, translation string) error {
   }
   return nil
 }
+
+
 func (d *DB) Input(vocab, translation string) error {
   exist, err := d.checkExist(vocab, translation)
   if err != nil {
@@ -107,6 +114,7 @@ func (d *DB) Input(vocab, translation string) error {
   }
   return nil
 }
+
 
 func (d *DB) List() ([]*Word, error) {
   rows, err := d.db.Query("SELECT vocab, translation, last_test FROM vocabs")
@@ -127,6 +135,7 @@ func (d *DB) List() ([]*Word, error) {
     m[vocab].Outputs = append(m[vocab].Outputs, &outputAndTest{translation, lastTest.Time})
   }
 
+  // sort the vocabs alphabetically
   var vocabs []string
   for k := range m {
     vocabs = append(vocabs, k)

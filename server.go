@@ -1,52 +1,67 @@
 package main
 
 import (
-  "fmt"
+	"fmt"
 
-  "vocabpractice/data"
-  "net/http"
+	"net/http"
+	"vocabpractice/data"
+	"vocabpractice/translate"
 
-  "github.com/labstack/echo"
-  "github.com/labstack/echo/middleware"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 func main() {
-  e := echo.New()
-  e.Use(middleware.Logger())
-  e.Use(middleware.Recover())
-  db, err := data.Init()
-  if err != nil {
-    e.Logger.Fatalf("Unable to connect to database: %v", err)
-    return
-  }
+	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	db, err := data.Init()
+	if err != nil {
+		e.Logger.Fatalf("Unable to connect to database: %v", err)
+		return
+	}
 
-  e.GET("/", func(c echo.Context) error {
-    nextWord, err := db.FetchNext()
-    if err != nil {
-      return c.String(http.StatusInternalServerError, err.Error())
-    }
-    return c.String(http.StatusOK, nextWord.String())
-  })
+	e.GET("/", func(c echo.Context) error {
+		nextWord, err := db.FetchNext()
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+		return c.String(http.StatusOK, nextWord.String())
+	})
 
-  e.GET("/list", func(c echo.Context) error {
-    words, err := db.List()
-    if err != nil {
-      return c.String(http.StatusInternalServerError, err.Error())
-    }
-    return c.String(http.StatusOK, fmt.Sprintf("%v", words))
-  })
+	e.GET("/list", func(c echo.Context) error {
+		words, err := db.List()
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+		return c.String(http.StatusOK, fmt.Sprintf("%v", words))
+	})
 
-  e.POST("/pass", func(c echo.Context) error {
-    v := c.FormValue("vocab")
-    t := c.FormValue("translation")
-    if v == "" || t == "" {
-      return c.String(http.StatusBadRequest, fmt.Sprintf("no necessary parameters in request vocab=%s, translation=%s", v, t))
-    }
-    err := db.Pass(v, t)
-    if err != nil {
-      return c.String(http.StatusInternalServerError, err.Error())
-    }
-    return c.String(http.StatusOK, fmt.Sprintf("vocab=%s, translation=%s", v, t))
-  })
-  e.Logger.Fatal(e.Start(":1234"))
+	e.GET("/lookup", func(c echo.Context) error {
+		vocab := c.QueryParam("vocab")
+		translations, err := translate.Lookup(vocab)
+		if err != nil {
+			return c.String(http.StatusBadRequest, err.Error())
+		}
+		return c.String(http.StatusOK, fmt.Sprintf("%v", translations))
+	})
+
+	e.GET("/submit", func(c echo.Context) error {
+		return nil
+	})
+
+	e.POST("/pass", func(c echo.Context) error {
+		v := c.FormValue("vocab")
+		t := c.FormValue("translation")
+		if v == "" || t == "" {
+			return c.String(http.StatusBadRequest, fmt.Sprintf("no necessary parameters in request vocab=%s, translation=%s", v, t))
+		}
+		err := db.Pass(v, t)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+		return c.String(http.StatusOK, fmt.Sprintf("vocab=%s, translation=%s", v, t))
+	})
+
+	e.Logger.Fatal(e.Start(":1234"))
 }
