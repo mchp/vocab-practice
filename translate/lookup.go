@@ -12,16 +12,16 @@ const spanish = "es"
 
 // TranslatedWord is a translation and the class of word
 type TranslatedWord struct {
-	class       string
-	translation string
+	Class       string `json:"class"`
+	Translation string `json:"translation"`
 }
 
 func (t *TranslatedWord) String() string {
-	return fmt.Sprintf("(%s) %s", t.class, t.translation)
+	return fmt.Sprintf("(%s) %s", t.Class, t.Translation)
 }
 
 // Lookup fetches translation results from Google Translate
-func Lookup(input string) ([]TranslatedWord, error) {
+func Lookup(input string) ([]*TranslatedWord, error) {
 	url := fmt.Sprintf(urlFormat, spanish, english, url.PathEscape(input))
 	resp, err := http.Get(url)
 	if err != nil {

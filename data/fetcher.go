@@ -7,26 +7,28 @@ import (
 	"sort"
 	"time"
 
+	// MySQL driver
 	_ "github.com/go-sql-driver/mysql"
 )
 
 // Word represents all the translations assigned to a vocab and the last time each translation was tested and passed
 type Word struct {
-	Input   string
-	Outputs []*outputAndTest
+	Vocab        string                `json:"vocab"`
+	Translations []*TranslationAndTest `json:"translations"`
 }
 
 func (w *Word) String() string {
-	str := w.Input + ": "
-	for _, o := range w.Outputs {
-		str = fmt.Sprintf("%s %s(%s)", str, o.output, o.tested)
+	str := w.Vocab + ": "
+	for _, o := range w.Translations {
+		str = fmt.Sprintf("%s %s(%s)", str, o.Translation, o.LastTested)
 	}
 	return str
 }
 
-type outputAndTest struct {
-	output string
-	tested time.Time
+// TranslationAndTest
+type TranslationAndTest struct {
+	Translation string    `json:"translation"`
+	LastTested  time.Time `json:"lastTested"`
 }
 
 // DB handles interfacing with vocab storage
@@ -48,7 +50,7 @@ func Init() (*DB, error) {
 
 // FetchNext get the least recently tested vocab/translation pair
 func (d *DB) FetchNext() (*Word, error) {
-	row := d.db.QueryRow("SELECT vocab FROM vocabs ORDER BY last_test DESC LIMIT 1")
+	row := d.db.QueryRow("SELECT vocab FROM vocabs ORDER BY last_test ASC LIMIT 1")
 	var vocab string
 	if err := row.Scan(&vocab); err != nil {
 		log.Fatal(err)
@@ -59,14 +61,14 @@ func (d *DB) FetchNext() (*Word, error) {
 		log.Fatal(err)
 	}
 	defer rows.Close()
-	w := &Word{Input: vocab}
+	w := &Word{Vocab: vocab}
 	for rows.Next() {
 		var trans string
 		var lastTested sql.NullTime
 		if err := rows.Scan(&trans, &lastTested); err != nil {
 			log.Fatal(err)
 		}
-		w.Outputs = append(w.Outputs, &outputAndTest{trans, lastTested.Time})
+		w.Translations = append(w.Translations, &TranslationAndTest{trans, lastTested.Time})
 	}
 	return w, nil
 }
@@ -130,9 +132,9 @@ func (d *DB) List() ([]*Word, error) {
 			log.Fatal(err)
 		}
 		if m[vocab] == nil {
-			m[vocab] = &Word{Input: vocab}
+			m[vocab] = &Word{Vocab: vocab}
 		}
-		m[vocab].Outputs = append(m[vocab].Outputs, &outputAndTest{translation, lastTest.Time})
+		m[vocab].Translations = append(m[vocab].Translations, &TranslationAndTest{translation, lastTest.Time})
 	}
 
 	// sort the vocabs alphabetically
@@ -141,9 +143,9 @@ func (d *DB) List() ([]*Word, error) {
 		vocabs = append(vocabs, k)
 	}
 	sort.Strings(vocabs)
-	var orderedWords []*Word
+	var words []*Word
 	for _, k := range vocabs {
-		orderedWords = append(orderedWords, m[k])
+		words = append(words, m[k])
 	}
-	return orderedWords, nil
+	return words, nil
 }

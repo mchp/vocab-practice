@@ -14,3 +14,5 @@
 # Visual Studio config file
 /.vscode
 
+# Output of npm run build
+/public

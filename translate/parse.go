@@ -14,12 +14,12 @@ type token struct {
 	children []*token
 }
 
-func parseToWords(in io.Reader) ([]TranslatedWord, error) {
+func parseToWords(in io.Reader) ([]*TranslatedWord, error) {
 	root := &token{}
 	if err := parse(in, root); err != nil {
 		return nil, err
 	}
-	var result []TranslatedWord
+	var result []*TranslatedWord
 	if len(root.children) != 1 {
 		return nil, fmt.Errorf("fetched empty result from Google Translate")
 	}
@@ -36,7 +36,7 @@ func parseToWords(in io.Reader) ([]TranslatedWord, error) {
 			return nil, fmt.Errorf("expected one of %v, found %s", allowedClasses, class)
 		}
 		for _, w := range t.children[1].children {
-			result = append(result, TranslatedWord{class: class, translation: w.value})
+			result = append(result, &TranslatedWord{class, w.value})
 		}
 	}
 	return result, nil
