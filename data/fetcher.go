@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"math/rand"
 	"sort"
 	"time"
 
@@ -48,15 +49,23 @@ func Init() (*DB, error) {
 	return &DB{db}, nil
 }
 
-// FetchNext get the least recently tested vocab/translation pair
+// FetchNext get one of the least recently tested vocab/translation pair
 func (d *DB) FetchNext() (*Word, error) {
-	row := d.db.QueryRow("SELECT vocab FROM vocabs ORDER BY last_test ASC LIMIT 1")
-	var vocab string
-	if err := row.Scan(&vocab); err != nil {
+	// Look up 10 to add some randomness to it.
+	rows, err := d.db.Query("SELECT vocab FROM vocabs ORDER BY last_test ASC LIMIT 10")
+	if err != nil {
 		log.Fatal(err)
 	}
-
-	rows, err := d.db.Query("SELECT translation, last_test FROM vocabs WHERE vocab=?", vocab)
+	var vocabs []string
+	for rows.Next() {
+		var vocab string
+		if err := rows.Scan(&vocab); err != nil {
+			log.Fatal(err)
+		}
+		vocabs = append(vocabs, vocab)
+	}
+	vocab := vocabs[rand.Intn(len(vocabs))]
+	rows, err = d.db.Query("SELECT translation, last_test FROM vocabs WHERE vocab=?", vocab)
 	if err != nil {
 		log.Fatal(err)
 	}
