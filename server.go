@@ -24,8 +24,8 @@ func main() {
 	e.File("/", "public/quiz/index.html")
 	e.Static("/static", "public/quiz/static")
 
-	e.File("/add", "public/input/index.html")
-	e.Static("/add/static", "pubic/add/static")
+	e.File("/add", "public/add/index.html")
+	e.Static("/add/static", "public/add/static")
 
 	e.GET("/next", func(c echo.Context) error {
 		nextWord, err := db.FetchNext()
@@ -77,6 +77,5 @@ func main() {
 		}
 		return c.NoContent(http.StatusOK)
 	})
-
 	e.Logger.Fatal(e.Start(":1234"))
 }

@@ -23,8 +23,8 @@ func parseToWords(in io.Reader) ([]*TranslatedWord, error) {
 	if len(root.children) != 1 {
 		return nil, fmt.Errorf("fetched empty result from Google Translate")
 	}
-	if len(root.children[0].children) != 3 {
-		return nil, fmt.Errorf("expect the root to have 3 children, found %d", len(root.children[0].children))
+	if len(root.children[0].children) < 3 {
+		return nil, fmt.Errorf("expect the root to have 3 or more children, found %d", len(root.children[0].children))
 	}
 	translationBlocks := root.children[0].children[1]
 	for _, t := range translationBlocks.children {
