@@ -1,3 +1,67 @@
+body {
+  background-color: #009bce;
+  color: white;
+}
+
+#root {
+  margin: auto;
+  width: 60%;
+  text-align: center;
+}
+
+h1 {
+  font-size: 3em;
+}
+
+#card {
+  border: 1px lightblue solid;
+  border-radius: 10px;
+  margin-top: 2em;
+  padding-bottom: 2em;
+  background-color:white;
+  color: #009bce;
+}
+
+#answer {
+  border: none;
+  font-size: 2em;
+  text-align: center;
+  color: #009bce;
+  width: 100%;
+}
+
+#answer:focus {
+  outline-width: 0;
+}
+
+#skip {
+  margin-top: 1em;
+  color: lightblue;
+}
+
+.verdict {
+  font-size: 3em;
+  font-weight: bold;
+  font-family: cursive;
+}
+
+.correct {
+  color: lightgreen;
+}
+
+.incorrect {
+  color: darkred;
+}
+
+.checked:before {
+  content: "\2713 ";
+}
+
+.testTime {
+  font-style: italic;
+  font-size: 0.5em;
+}
+
 .hidden {
   display: none;
 }

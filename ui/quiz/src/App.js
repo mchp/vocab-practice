@@ -22,11 +22,11 @@ class quiz extends Component {
     }
     var currentAnswer = document.getElementById("answer").value;
     if (currentAnswer === this.state.currentAnswer) {
-      return;
-    }
-    this.setState({
-      currentAnswer: currentAnswer,
-    });
+      this.fetchNext();
+    } else {
+      this.setState({
+        currentAnswer: currentAnswer,
+    })};
   }
 
   componentDidMount() {
@@ -92,17 +92,29 @@ class quiz extends Component {
   }
 
   renderAnswer(answer, time) {
-    return <div> {answer} (last tested {time}) </div>
+    return (
+    <div>
+      <div className={this.state.currentAnswer===answer?"checked":""}> 
+        {answer}
+      </div>
+      <div className="testTime">last tested {time}</div>
+    </div>)
   }
 
   render() {
+    var classNames = require('classnames');
+    var correctClass = classNames("verdict", "correct", {'hidden': !this.verdict()});
+    var incorrectClass = classNames("verdict", "incorrect", {'hidden': this.verdict()});
     return (
       <div>
-        <h1>{this.state.question}</h1>
-        <input id="answer" onKeyUp={(e) => this.check(e)}/>
-        <button onClick={this.fetchNext}> next </button>
+        <div id="card">
+          <h1>{this.state.question}</h1>
+          <input id="answer" onKeyUp={(e) => this.check(e)}/>
+        </div>
+        <div id="skip" onClick={this.fetchNext}> skip >> </div>
         <div className={this.state.currentAnswer===""?"hidden":""}>
-          {this.verdict()?"correct":"incorrect"}
+          <span className={correctClass}>Correct!</span>
+          <span className={incorrectClass}>Incorrect :(</span>
           {this.state.answers.map(a => {
             return this.renderAnswer(a.translation, a.lastTested);
           })}
