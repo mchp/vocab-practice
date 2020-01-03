@@ -36,7 +36,7 @@ func parseToWords(in io.Reader) ([]*TranslatedWord, error) {
 			return nil, fmt.Errorf("expected one of %v, found %s", allowedClasses, class)
 		}
 		for _, w := range t.children[1].children {
-			result = append(result, &TranslatedWord{class, w.value})
+			result = append(result, &TranslatedWord{class, w.value, false})
 		}
 	}
 	return result, nil

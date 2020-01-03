@@ -65,7 +65,12 @@ func (d *DB) FetchNext() (*Word, error) {
 		vocabs = append(vocabs, vocab)
 	}
 	vocab := vocabs[rand.Intn(len(vocabs))]
-	rows, err = d.db.Query("SELECT translation, last_test FROM vocabs WHERE vocab=?", vocab)
+	return d.QueryWord(vocab)
+}
+
+// QueryWord fetches all the translations of a vocab and the last time the translations are tested
+func (d *DB) QueryWord(vocab string) (*Word, error) {
+	rows, err := d.db.Query("SELECT translation, last_test FROM vocabs WHERE vocab=?", vocab)
 	if err != nil {
 		log.Fatal(err)
 	}

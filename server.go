@@ -49,6 +49,18 @@ func main() {
 		if err != nil {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
+		alreadyExists, err := db.QueryWord(vocab)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+		for _, t := range translations {
+			for _, ex := range alreadyExists.Translations {
+				if t.Translation == ex.Translation {
+					t.Exists = true
+					break
+				}
+			}
+		}
 		return c.JSON(http.StatusOK, translations)
 	})
 

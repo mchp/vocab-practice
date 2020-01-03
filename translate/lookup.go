@@ -14,6 +14,7 @@ const spanish = "es"
 type TranslatedWord struct {
 	Class       string `json:"class"`
 	Translation string `json:"translation"`
+	Exists      bool   `json:"exists"`
 }
 
 func (t *TranslatedWord) String() string {
@@ -27,6 +28,5 @@ func Lookup(input string) ([]*TranslatedWord, error) {
 	if err != nil {
 		return nil, err
 	}
-	//TODO: mark all the translations that already exist in storage
 	return parseToWords(resp.Body)
 }
