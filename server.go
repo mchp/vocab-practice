@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"net/http"
 	"vocabpractice/data"
@@ -15,7 +16,10 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	db, err := data.Init()
+	username := os.Getenv("DB_USERNAME")
+	password := os.Getenv("DB_PASSWORD")
+	host := os.Getenv("DB_HOST")
+	db, err := data.InitStructured(host, username, password)
 	if err != nil {
 		e.Logger.Fatalf("Unable to connect to database: %v", err)
 		return

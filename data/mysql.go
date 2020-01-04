@@ -12,45 +12,24 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// Word represents all the translations assigned to a vocab and the last time each translation was tested and passed
-type Word struct {
-	Vocab        string                `json:"vocab"`
-	Translations []*TranslationAndTest `json:"translations"`
-}
-
-func (w *Word) String() string {
-	str := w.Vocab + ": "
-	for _, o := range w.Translations {
-		str = fmt.Sprintf("%s %s(%s)", str, o.Translation, o.LastTested)
-	}
-	return str
-}
-
-// TranslationAndTest
-type TranslationAndTest struct {
-	Translation string    `json:"translation"`
-	LastTested  time.Time `json:"lastTested"`
-}
-
-// DB handles interfacing with vocab storage
-type DB struct {
+type structuredDB struct {
 	db *sql.DB
 }
 
-// Init returns a usable instance of DB
-func Init() (*DB, error) {
-	db, err := sql.Open("mysql", "root:rainstop@tcp(:3306)/vocabpractice?parseTime=true")
+// InitStructured returns a usable instance of database with a relationship database underneath
+func InitStructured(host, username, password string) (Database, error) {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/vocabpractice?parseTime=true", username, password, host))
 	if err != nil {
 		return nil, err
 	}
 	if err = db.Ping(); err != nil {
 		return nil, err
 	}
-	return &DB{db}, nil
+	return &structuredDB{db}, nil
 }
 
 // FetchNext get one of the least recently tested vocab/translation pair
-func (d *DB) FetchNext() (*Word, error) {
+func (d *structuredDB) FetchNext() (*Word, error) {
 	// Look up 10 to add some randomness to it.
 	rows, err := d.db.Query("SELECT vocab FROM vocabs ORDER BY last_test ASC LIMIT 10")
 	if err != nil {
@@ -69,7 +48,7 @@ func (d *DB) FetchNext() (*Word, error) {
 }
 
 // QueryWord fetches all the translations of a vocab and the last time the translations are tested
-func (d *DB) QueryWord(vocab string) (*Word, error) {
+func (d *structuredDB) QueryWord(vocab string) (*Word, error) {
 	rows, err := d.db.Query("SELECT translation, last_test FROM vocabs WHERE vocab=?", vocab)
 	if err != nil {
 		log.Fatal(err)
@@ -87,7 +66,7 @@ func (d *DB) QueryWord(vocab string) (*Word, error) {
 	return w, nil
 }
 
-func (d *DB) checkExist(vocab, translation string) (bool, error) {
+func (d *structuredDB) checkExist(vocab, translation string) (bool, error) {
 	rows, err := d.db.Query("SELECT * FROM vocabs WHERE vocab=? AND translation=?", vocab, translation)
 	if err != nil {
 		return false, err
@@ -100,7 +79,7 @@ func (d *DB) checkExist(vocab, translation string) (bool, error) {
 }
 
 // Pass should be called when the user correctly identified a vocab-translation pair
-func (d *DB) Pass(vocab, translation string) error {
+func (d *structuredDB) Pass(vocab, translation string) error {
 	exist, err := d.checkExist(vocab, translation)
 	if err != nil || !exist {
 		return fmt.Errorf("could not find %s -> %s: %v", vocab, translation, err)
@@ -116,7 +95,7 @@ func (d *DB) Pass(vocab, translation string) error {
 }
 
 // Input submits a new vocab translation pair into the database
-func (d *DB) Input(vocab, translation string) error {
+func (d *structuredDB) Input(vocab, translation string) error {
 	exist, err := d.checkExist(vocab, translation)
 	if err != nil {
 		return err
@@ -132,7 +111,7 @@ func (d *DB) Input(vocab, translation string) error {
 }
 
 // List returns all the vocab and translations in storage
-func (d *DB) List() ([]*Word, error) {
+func (d *structuredDB) List() ([]*Word, error) {
 	rows, err := d.db.Query("SELECT vocab, translation, last_test FROM vocabs")
 	if err != nil {
 		return nil, err
