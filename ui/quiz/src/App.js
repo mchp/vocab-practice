@@ -38,7 +38,6 @@ class quiz extends Component {
       return;
     }
     if (this.verdict() && !this.state.loading) {
-      console.log("right answer");
       this.postPass();
     }
   }
@@ -92,12 +91,16 @@ class quiz extends Component {
   }
 
   renderAnswer(answer, time) {
+    var testedTimeString = "never tested";
+    if (time != "0001-01-01T00:00:00Z") {
+      testedTimeString = "last tested " + time;
+    }
     return (
     <div>
       <div className={this.state.currentAnswer===answer?"checked":""}> 
         {answer}
       </div>
-      <div className="testTime">last tested {time}</div>
+      <div className="testTime">{testedTimeString}</div>
     </div>)
   }
 
