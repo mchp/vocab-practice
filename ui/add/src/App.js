@@ -10,6 +10,7 @@ class add extends Component {
       selected: "",
       loading: false,
       error: "",
+      submitted: [],
     }
     this.lookup = this.lookup.bind(this);
     this.submit = this.submit.bind(this);
@@ -27,6 +28,7 @@ class add extends Component {
           translations: result ? result : [],
           selected: "",
           error: result ? "" : "No result found",
+          submitted: [],
         });
       });
   }
@@ -34,7 +36,7 @@ class add extends Component {
   submit() {
     var selected = document.getElementsByClassName("translationCheckbox");
     for (var i=0; selected[i]; i++) {
-      if (!selected[i].checked) {
+      if (!selected[i].checked || selected[i].disabled) {
         continue;
       }
       var translation = selected[i].value;
@@ -45,7 +47,12 @@ class add extends Component {
       })
         .then(res => res.text())
         .then(
-          (m) => {this.setState({loading:false, error : m})}
+          (m) => {
+            this.setState({
+              loading:false,
+              error: m,
+              submitted: this.state.submitted.concat(translation),
+          })}
         )
   }};
   
@@ -58,9 +65,10 @@ class add extends Component {
           <div>
             {
               this.state.translations.map(translation => {
+                var disabled = translation.exists || this.state.submitted.includes(translation.translation);
                 return (
                   <div>
-                    <input className="translationCheckbox" type="checkbox" name="translation" value={translation.translation}/> {translation.translation} ({translation.class})
+                    <input className="translationCheckbox" type="checkbox" name="translation" defaultChecked={disabled} disabled={disabled} value={translation.translation}/> {translation.translation} ({translation.class})
                   </div>
               )})
             }
