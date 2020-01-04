@@ -1,3 +1,68 @@
+body {
+    background-color: #009bce;
+    color: white;
+}
+
+#root {
+    margin: auto;
+    width: 80%;
+    text-align: center;
+    padding-top: 1em;
+}
+
+#vocab {
+    border: 1px lightblue solid;
+    border-radius: 1em;
+    font-size: 3em;
+    text-align: center;
+    width: 100%;
+    color: #009bce;
+}
+  
+#vocab:focus {
+    outline-width: 0;
+}
+
+#results {
+    text-align: left;
+    font-size: 2em;
+}
+
+.translationCheckbox {
+    font-size: 2em;
+    -webkit-appearance: none;
+    background-color: white;
+    border: 1px solid #cacece;
+    padding: 9px;
+    border-radius: 3px;
+    display: inline-block;
+    position: relative;
+}
+
+.translationCheckbox:disabled {
+    background-color: grey
+}
+
+.translationCheckbox:checked:after {
+	content: '\2714';
+	font-size: 14px;
+	position: absolute;
+	top: 0px;
+	left: 3px;
+	color: #009bce;
+}
+
+.button {
+    margin: 0.5em auto;
+    background-color: #b05bff;
+    padding: 0.5em;
+    border-radius: 1em;
+    width: fit-content;
+}
+
+.error {
+    color: darkred;
+}
 .hidden {
     display: none;
 }

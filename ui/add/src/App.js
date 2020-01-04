@@ -60,25 +60,38 @@ class add extends Component {
     return (
       <div>
         <input id="vocab" />
-        <button onClick={this.lookup}>lookup</button>
-        <div id="results">
-          <div>
+        <div className="button">
+          <a onClick={this.lookup}>Look up </a>
+        </div>
+        <div className={this.state.translations.length>0?"":"hidden"}>
+          <div id="results">
             {
               this.state.translations.map(translation => {
                 var disabled = translation.exists || this.state.submitted.includes(translation.translation);
+                if (disabled) {
+                  return (
+                    <div>
+                      <input className="translationCheckbox" type="checkbox" name="translation" checked disabled value={translation.translation}/> {translation.translation} ({translation.class})
+                    </div>
+                )}
                 return (
                   <div>
-                    <input className="translationCheckbox" type="checkbox" name="translation" defaultChecked={disabled} disabled={disabled} value={translation.translation}/> {translation.translation} ({translation.class})
+                    <input className="translationCheckbox" type="checkbox" name="translation" value={translation.translation}/> {translation.translation} ({translation.class})
                   </div>
-              )})
+                )
+              })  
             }
           </div>
-          <button onClick={this.submit}>submit</button>
+        <div className="button">
+          <a onClick={this.submit}>Submit!</a>
+        </div>
         </div>
         <div className={this.state.loading?"":"hidden"}>
           loading...
         </div>
-        {this.state.error}
+        <div className="error">
+          {this.state.error}
+        </div>
       </div>
     );
   }
