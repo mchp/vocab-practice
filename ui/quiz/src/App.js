@@ -65,25 +65,29 @@ class quiz extends Component {
   fetchNext() {
     this.setState({loading: true});
     fetch('/next')
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            question: result.vocab,
-            answers: result.translations,
-            currentAnswer: "",
-            loading: false,
-            error: "",
-          });
-          document.getElementById("answer").value = "";
-        },
-
-        (error) => {
-          this.setState({
-            loading: false,
-            error: error.message,
-          })
-        }); 
+      .then(res => {
+        if (res.status == 200) {
+          res.json().then(
+            (result) => {
+              this.setState({
+                question: result.vocab,
+                answers: result.translations,
+                currentAnswer: "",
+                loading: false,
+                error: "",
+              });
+            document.getElementById("answer").value = "";
+          },)
+        } else {
+          res.text().then( 
+            (error) => {
+              this.setState({
+                loading: false,
+                error: error
+              })
+        })
+      }
+    });
   }
 
   verdict() {
