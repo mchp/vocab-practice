@@ -16,13 +16,21 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	username := os.Getenv("DB_USERNAME")
-	password := os.Getenv("DB_PASSWORD")
-	host := os.Getenv("DB_HOST")
-	db, err := data.InitStructured(host, username, password)
-	if err != nil {
-		e.Logger.Fatalf("Unable to connect to database: %v", err)
-		return
+
+	args := os.Args[1:]
+	var db data.Database
+	var err error
+	if len(args) > 0 && args[0] == "aws" {
+		db, err = data.InitDynamoDB()
+	} else {
+		username := os.Getenv("DB_USERNAME")
+		password := os.Getenv("DB_PASSWORD")
+		host := os.Getenv("DB_HOST")
+		db, err = data.InitStructured(host, username, password)
+		if err != nil {
+			e.Logger.Fatalf("Unable to connect to database: %v", err)
+			return
+		}
 	}
 
 	e.File("/", "public/quiz/index.html")
