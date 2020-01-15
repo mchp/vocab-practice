@@ -12,13 +12,20 @@ func main() {
 		fmt.Println("no argument supplied")
 		return
 	}
+	local := false
+	if args[0] == "local" {
+		if len(args) == 1 {
+			args = append(args, "none")
+		}
+		local = true
+		args = args[1:]
+	}
+	db, err := data.InitDynamoDB(local)
 
-	db, err := data.InitDynamoDB()
 	if err != nil {
 		fmt.Print("init db:", err)
 		return
 	}
-
 	switch args[0] {
 	case "fetch":
 		fmt.Println(db.FetchNext())

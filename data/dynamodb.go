@@ -29,11 +29,18 @@ type row struct {
 }
 
 // InitDynamoDB returns a usable instance of DynamoDB
-func InitDynamoDB() (Database, error) {
-	sess := session.Must(session.NewSession(&aws.Config{
-		Region:   aws.String("us-west-1"),
-		Endpoint: aws.String("http://localhost:8000"),
-	}))
+func InitDynamoDB(local bool) (Database, error) {
+	var sess *session.Session
+	if local {
+		sess = session.Must(session.NewSession(&aws.Config{
+			Region:   aws.String("us-west-1"),
+			Endpoint: aws.String("http://localhost:8000"),
+		}))
+	} else {
+		sess = session.Must(session.NewSessionWithOptions(session.Options{
+			SharedConfigState: session.SharedConfigEnable,
+		}))
+	}
 	svc := dynamodb.New(sess)
 	return &dynamoDB{svc}, nil
 }

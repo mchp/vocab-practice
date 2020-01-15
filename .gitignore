@@ -16,3 +16,6 @@
 
 # Output of npm run build
 /public
+
+# Local scripts
+/scripts

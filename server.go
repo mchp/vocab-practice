@@ -20,9 +20,7 @@ func main() {
 	args := os.Args[1:]
 	var db data.Database
 	var err error
-	if len(args) > 0 && args[0] == "aws" {
-		db, err = data.InitDynamoDB()
-	} else {
+	if len(args) > 0 && args[0] == "sql" {
 		username := os.Getenv("DB_USERNAME")
 		password := os.Getenv("DB_PASSWORD")
 		host := os.Getenv("DB_HOST")
@@ -31,6 +29,9 @@ func main() {
 			e.Logger.Fatalf("Unable to connect to database: %v", err)
 			return
 		}
+	} else {
+		local := len(args) > 0 && args[0] == "local"
+		db, err = data.InitDynamoDB(local)
 	}
 
 	e.File("/", "public/quiz/index.html")
@@ -101,5 +102,5 @@ func main() {
 		}
 		return c.NoContent(http.StatusOK)
 	})
-	e.Logger.Fatal(e.Start(":1234"))
+	e.Logger.Fatal(e.Start(":80"))
 }
