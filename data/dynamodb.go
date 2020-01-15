@@ -2,7 +2,7 @@ package data
 
 import (
 	"fmt"
-	"math"
+	"math/rand"
 	"strconv"
 	"time"
 
@@ -64,24 +64,16 @@ func (d *dynamoDB) FetchNext() (*Word, error) {
 		return nil, err
 	}
 
-	earliest := row{
-		LastTested: math.MaxInt64,
+	item := row{}
+	if *result.Count > 0 {
+		rand.Seed(time.Now().Unix())
+		err = dynamodbattribute.UnmarshalMap(result.Items[rand.Intn(int(*result.Count))], &item)
 	}
-	for _, i := range result.Items {
-		item := row{}
 
-		err = dynamodbattribute.UnmarshalMap(i, &item)
-		if err != nil {
-			return nil, err
-		}
-		if earliest.LastTested > item.LastTested {
-			earliest = item
-		}
-	}
-	if earliest.Vocab == "" {
+	if item.Vocab == "" {
 		return nil, fmt.Errorf("no eligible vocabs to fetch")
 	}
-	return d.QueryWord(earliest.Vocab)
+	return d.QueryWord(item.Vocab)
 }
 
 // QueryWord fetches all the translations of a vocab and the last time the translations are tested
