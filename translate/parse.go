@@ -7,7 +7,7 @@ import (
 )
 
 var allowedClasses = []string{
-	"noun", "verb", "adjective", "adverb", "pronoun", "preposition", "conjunction", "particle"}
+	"noun", "verb", "adjective", "adverb", "pronoun", "preposition", "conjunction", "particle", "phrase"}
 
 type token struct {
 	value    string
