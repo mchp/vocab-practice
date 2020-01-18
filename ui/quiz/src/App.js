@@ -20,7 +20,7 @@ class quiz extends Component {
     if (e.keyCode !== 13) {
       return;
     }
-    var currentAnswer = document.getElementById("answer").value;
+    var currentAnswer = document.getElementById("answer").value.toLowerCase();
     if (currentAnswer === this.state.currentAnswer) {
       this.fetchNext();
     } else {
@@ -47,7 +47,7 @@ class quiz extends Component {
     fetch('/pass', {
       method: 'POST',
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: 'vocab=' + this.state.question + 
+      body: 'vocab=' + this.state.question.toLowerCase() + 
             '&translation=' + this.state.currentAnswer
     }).then(() => {
         this.setState({
@@ -116,7 +116,7 @@ class quiz extends Component {
       <div>
         <div id="card">
           <h1>{this.state.question}</h1>
-          <input id="answer" onKeyUp={(e) => this.check(e)}/>
+          <input id="answer" autocapitalize="none" autocomplete="off" onClick={() => {document.getElementById("vocab").select()}} onKeyUp={(e) => this.check(e)}/>
         </div>
         <div id="skip" onClick={this.fetchNext}> skip >> </div>
         <div className={this.state.currentAnswer===""?"hidden":""}>

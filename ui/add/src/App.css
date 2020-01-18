@@ -17,6 +17,7 @@ body {
     text-align: center;
     width: 100%;
     color: #009bce;
+    -webkit-text-stroke: 1px white
 }
   
 #vocab:focus {

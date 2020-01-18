@@ -18,8 +18,9 @@ class add extends Component {
   
   lookup() {
     this.setState({loading: "true", error: ""});
-    var vocab = document.getElementById("vocab").value;
-    fetch("/lookup?vocab=" + vocab)
+    var input = document.getElementById("vocab");
+    var vocab = input.value;
+    fetch("/lookup?vocab=" + vocab.toLowerCase())
       .then(res => res.json())
       .then(result => {
         this.setState({
@@ -59,7 +60,7 @@ class add extends Component {
   render() {
     return (
       <div>
-        <input id="vocab" />
+        <input id="vocab" autocapitalize="none" autocomplete="off" onClick={() => {document.getElementById("vocab").select()}} />
         <div className="button">
           <a onClick={this.lookup}>Look up </a>
         </div>

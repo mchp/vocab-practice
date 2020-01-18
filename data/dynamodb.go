@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -78,6 +79,7 @@ func (d *dynamoDB) FetchNext() (*Word, error) {
 
 // QueryWord fetches all the translations of a vocab and the last time the translations are tested
 func (d *dynamoDB) QueryWord(vocab string) (*Word, error) {
+	vocab = strings.ToLower(vocab)
 	result, err := d.db.Query(&dynamodb.QueryInput{
 		TableName:              aws.String(tableName),
 		KeyConditionExpression: aws.String("vocab=:v"),
@@ -128,6 +130,8 @@ func (d *dynamoDB) checkExist(vocab, translation string) (bool, error) {
 
 // Pass should be called when the user correctly identified a vocab-translation pair
 func (d *dynamoDB) Pass(vocab, translation string) error {
+	vocab = strings.ToLower(vocab)
+	translation = strings.ToLower(translation)
 	exist, err := d.checkExist(vocab, translation)
 	if err != nil || !exist {
 		return fmt.Errorf("could not find %s -> %s: %v", vocab, translation, err)
@@ -148,6 +152,8 @@ func (d *dynamoDB) Pass(vocab, translation string) error {
 
 // Input submits a new vocab translation pair into the database
 func (d *dynamoDB) Input(vocab, translation string) error {
+	vocab = strings.ToLower(vocab)
+	translation = strings.ToLower(translation)
 	item, err := dynamodbattribute.MarshalMap(&row{
 		Vocab:       vocab,
 		Translation: translation,
