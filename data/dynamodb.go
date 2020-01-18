@@ -27,6 +27,7 @@ type row struct {
 	Vocab       string `json:"vocab"`
 	Translation string `json:"translation"`
 	LastTested  int64  `json:"lastTested"`
+	Achived     bool   `json:"achived"`
 }
 
 // InitDynamoDB returns a usable instance of DynamoDB
