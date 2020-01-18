@@ -16,7 +16,10 @@ class add extends Component {
     this.submit = this.submit.bind(this);
   }
   
-  lookup() {
+  lookup(e) {
+    if (!!e && e.keyCode !== 13) {
+      return;
+    }
     this.setState({loading: "true", error: ""});
     var input = document.getElementById("vocab");
     var vocab = input.value;
@@ -60,7 +63,7 @@ class add extends Component {
   render() {
     return (
       <div>
-        <input id="vocab" autocapitalize="none" autocomplete="off" onClick={() => {document.getElementById("vocab").select()}} />
+        <input id="vocab" autocapitalize="none" autocomplete="off" onClick={() => {document.getElementById("vocab").select()}} onKeyUp={(e) => this.lookup(e)}/>
         <div className="button">
           <a onClick={this.lookup}>Look up </a>
         </div>
