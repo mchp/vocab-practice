@@ -91,7 +91,7 @@ class quiz extends Component {
   }
 
   verdict() {
-    return this.state.currentAnswer !== "" && this.state.answers.some(a => a.translation === this.state.currentAnswer);
+    return this.state.currentAnswer !== "" && this.state.answers.some(a => a.translation.toLowerCase() === this.state.currentAnswer.toLowerCase());
   }
 
   renderAnswer(answer, time) {
