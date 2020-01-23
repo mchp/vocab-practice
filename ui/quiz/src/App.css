@@ -16,6 +16,7 @@ h1 {
 #card {
   border: 1px lightblue solid;
   border-radius: 10px;
+  margin: auto;
   margin-top: 2em;
   padding-bottom: 2em;
   background-color:white;

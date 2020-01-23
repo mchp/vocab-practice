@@ -27,7 +27,8 @@ type row struct {
 	Vocab       string `json:"vocab"`
 	Translation string `json:"translation"`
 	LastTested  int64  `json:"lastTested"`
-	Achived     bool   `json:"achived"`
+	Archived    bool   `json:"archived"`
+	GlobalKey   string `json:"globalKey"`
 }
 
 // InitDynamoDB returns a usable instance of DynamoDB
@@ -49,6 +50,18 @@ func InitDynamoDB(local bool) (Database, error) {
 
 // FetchNext get one of the least recently tested vocab/translation pair
 func (d *dynamoDB) FetchNext() (*Word, error) {
+	/*TODO: check this method is indeed less efficient before uncomment and release
+	params := dynamodb.QueryInput{
+		TableName:              aws.String(tableName),
+		IndexName:              aws.String("globalKey-lastTested-index"),
+		KeyConditionExpression: aws.String("globalKey = g"),
+		ProjectionExpression:   aws.String("vocab"),
+		ScanIndexForward:       aws.Bool(true),
+		Limit:                  aws.Int64(20),
+	}
+
+	result, err := d.db.Query(params)*/
+
 	filter := expression.Name(testTimeName).AttributeNotExists().Or(
 		expression.Name(testTimeName).LessThan(expression.Value(time.Now().Add(-72 * time.Hour).Unix())))
 	fetches := expression.NamesList(expression.Name(vocabName), expression.Name(testTimeName))
@@ -158,6 +171,7 @@ func (d *dynamoDB) Input(vocab, translation string) error {
 	item, err := dynamodbattribute.MarshalMap(&row{
 		Vocab:       vocab,
 		Translation: translation,
+		GlobalKey:   "g",
 	})
 	if err != nil {
 		return err
