@@ -12,6 +12,8 @@ import (
 	"github.com/labstack/echo/middleware"
 )
 
+var version string
+
 func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -40,6 +42,9 @@ func main() {
 	e.File("/add", "public/add/index.html")
 	e.Static("/add/static", "public/add/static")
 
+	e.GET("/version", func(c echo.Context) error {
+		return c.String(http.StatusOK, version)
+	})
 	e.GET("/next", func(c echo.Context) error {
 		nextWord, err := db.FetchNext()
 		if err != nil {
