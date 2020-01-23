@@ -5,7 +5,6 @@ body {
 
 #root {
   margin: auto;
-  width: 60%;
   text-align: center;
 }
 
@@ -21,7 +20,6 @@ h1 {
   padding-bottom: 2em;
   background-color:white;
   color: #009bce;
-  width: fit-content;
 }
 
 #answer {
