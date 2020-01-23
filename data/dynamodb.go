@@ -11,7 +11,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 )
 
 type dynamoDB struct {
@@ -50,31 +49,19 @@ func InitDynamoDB(local bool) (Database, error) {
 
 // FetchNext get one of the least recently tested vocab/translation pair
 func (d *dynamoDB) FetchNext() (*Word, error) {
-	/*TODO: check this method is indeed less efficient before uncomment and release
-	params := dynamodb.QueryInput{
+	params := &dynamodb.QueryInput{
 		TableName:              aws.String(tableName),
 		IndexName:              aws.String("globalKey-lastTested-index"),
-		KeyConditionExpression: aws.String("globalKey = g"),
-		ProjectionExpression:   aws.String("vocab"),
-		ScanIndexForward:       aws.Bool(true),
-		Limit:                  aws.Int64(20),
+		KeyConditionExpression: aws.String("globalKey = :g"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":g": {S: aws.String("g")},
+		},
+		ProjectionExpression: aws.String("vocab"),
+		ScanIndexForward:     aws.Bool(true),
+		Limit:                aws.Int64(20),
 	}
 
-	result, err := d.db.Query(params)*/
-
-	filter := expression.Name(testTimeName).AttributeNotExists().Or(
-		expression.Name(testTimeName).LessThan(expression.Value(time.Now().Add(-72 * time.Hour).Unix())))
-	fetches := expression.NamesList(expression.Name(vocabName), expression.Name(testTimeName))
-	expr, err := expression.NewBuilder().WithFilter(filter).WithProjection(fetches).Build()
-	params := &dynamodb.ScanInput{
-		ExpressionAttributeNames:  expr.Names(),
-		ExpressionAttributeValues: expr.Values(),
-		FilterExpression:          expr.Filter(),
-		ProjectionExpression:      expr.Projection(),
-		TableName:                 aws.String(tableName),
-	}
-
-	result, err := d.db.Scan(params)
+	result, err := d.db.Query(params)
 	if err != nil {
 		return nil, err
 	}
