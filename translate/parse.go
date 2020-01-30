@@ -7,7 +7,7 @@ import (
 )
 
 var allowedClasses = []string{
-	"noun", "verb", "adjective", "adverb", "pronoun", "preposition", "conjunction", "particle", "phrase"}
+	"noun", "verb", "adjective", "adverb", "pronoun", "preposition", "conjunction", "particle", "phrase", "auxiliary verb"}
 
 type token struct {
 	value    string
@@ -52,6 +52,7 @@ func allowableClass(c string) bool {
 }
 
 // This method only works if we assume Google Translate always return well formed responses
+// TODO: write some test cases
 func parse(in io.Reader, parent *token) error {
 	var builder strings.Builder
 	currentChild := &token{}

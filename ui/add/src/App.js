@@ -17,7 +17,7 @@ class add extends Component {
   }
   
   lookup(e) {
-    if (!!e && e.keyCode !== 13) {
+    if (!!e && !!e.keyCode && e.keyCode !== 13) {
       return;
     }
     this.setState({loading: "true", error: ""});
